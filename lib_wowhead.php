@@ -7,7 +7,7 @@
 
 	function wowhead_achievement($id){
 
-		$ret = wowhead_request("/achievement=$id");
+		$ret = wowhead_request("http://www.wowhead.com/achievement=$id");
 		if (!$ret['ok']) return $ret;
 
 		$body = $ret['body'];
@@ -29,7 +29,7 @@
 		$out['description'] = wowhead_meta_tag($body, 'og:description');
 
 		if (preg_match("!_\[$id\]=(\{.*?\});!", $body, $m)){
-			$obj = wowhead_decode_json($m[1]);
+			$obj = json_decode_loose($m[1]);
 			$out['icon'] = $obj['icon'];
 		}
 
@@ -40,12 +40,13 @@
 	###########################################################################
 
 	#
-	# fetches a page from wowhead
+	# fetches a page from wowhead. this is just a stub to let
+	# us pass any needed args.
 	#
 
-	function wowhead_request($path){
+	function wowhead_request($url){
 
-		return http_get("http://www.wowhead.com$path");
+		return http_get($url);
 	}
 
 
@@ -65,37 +66,4 @@
 		}
 
 		return '';
-	}
-
-
-
-	#
-	# this is a 'loose' JSON decoder. the built-in PHP JSON decoder
-	# is very strict, and will not accept things which are fairly
-	# common in the wild:
-	#
-	#  * unquoted keys, e.g. {foo: 1}
-	#  * single-quoted strings, e.g. {"foo": 'bar'}
-	#  * escaped single quoted, e.g. {"foo": "b\'ar"}
-	#  * empty array elements, e.g. [1,,2]
-	#
-
-	function wowhead_decode_json($json){
-
-		#
-		# replace single quotes with doubles where it makes sense
-		# (this does not currently handle ~\\'~ correctly)
-		#
-
-		$json = preg_replace("~(?<!\\\\)'~", '"', $json);
-		$json = str_replace("\\'", "'", $json);
-
-
-		#
-		# quote unquoted key names
-		#
-
-		$json = preg_replace('!(\w+):!', '"$1":', $json);
-
-		return JSON_decode($json, true);
 	}
