@@ -37,6 +37,62 @@
 	}
 
 
+	function wowhead_quest_cats(){
+
+		$ret = wowhead_request('http://wowjs.zamimg.com/js/locale_enus.js');
+		if (!$ret['ok']) return $ret;
+
+		$body = $ret['body'];
+
+
+		#
+		# parse it out into variable assignments
+		#
+
+		$all = array();
+		$chunks = explode('var ', $body);
+		foreach ($chunks as $chunk){
+			$chunk = preg_replace('!;\s*!', '', $chunk);
+			if (strpos($chunk, '=') !== false){
+				list($name, $json) = explode('=', $chunk, 2);
+				$all[$name] = $json;
+			}
+		}
+
+
+		#
+		# get quest data
+		#
+
+		$obj = json_decode_loose($all['mn_quests']);
+
+		$out = array();
+		foreach ($obj as $cat){
+			$subs = array();
+
+			if (isset($cat[3]) && is_array($cat[3])){
+				foreach ($cat[3] as $sub){
+					$subs[$sub[0]] = array(
+						'id'	=> $sub[0],
+						'title'	=> $sub[1],
+					);
+				}
+			}
+
+			$out[$cat[0]] = array(
+				'id'	=> $cat[0],
+				'title'	=> $cat[1],
+				'subcats' => $subs,
+			);
+		}
+
+		return array(
+			'ok'	=> 1,
+			'cats'	=> $out,
+		);
+	}
+
+
 	###########################################################################
 
 	#
