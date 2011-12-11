@@ -13,6 +13,7 @@ However, Wowhead does not offer an API. There is a defacto API through the XML i
         'http_timeout' => 5,
     );
     include('lib_http.php');
+    include('lib_json.php');
     include('lib_wowhead.php');
 
     $ret = wowhead_achievement(2537);
