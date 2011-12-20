@@ -31,6 +31,7 @@ Functions always return a hash with an <code>ok</code> key, in the Flamework sty
 
     $ret = wowhead_achievement($id); # Achievement data
     $ret = wowhead_quest_cats(); # Quest categories & sub-categories
+    $ret = wowhead_recipes($profession); # Recipes
 
 More to come...
 
