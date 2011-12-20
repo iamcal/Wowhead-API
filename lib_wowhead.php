@@ -95,6 +95,55 @@
 
 	###########################################################################
 
+	function wowhead_recipes($profession_id){
+
+		$ret = wowhead_request("http://www.wowhead.com/skill=$profession_id");
+		if (!$ret['ok']) return $ret;
+
+		$body = $ret['body'];
+
+
+		#
+		# find the recipes ListView
+		#
+
+		$map = array();
+
+		preg_match_all('!new Listview\((.*?)\);!', $body, $m);
+		foreach ($m[1] as $json){
+
+			$obj = json_decode_loose($json);
+
+			$map[$obj['id']] = $obj;
+		}
+
+		$rs = array();
+		foreach ($map['recipes']['data'] as $row){
+
+			$r = array(
+				'name'	=> substr($row['name'], 1),
+				'qual'	=> substr($row['name'], 0, 1),
+			);
+
+			if (preg_match("!_\[$row[id]\]=(.*?);!", $body, $m)){
+				$obj = json_decode_loose($m[1]);
+
+				$r['icon'] = $obj['icon'];
+			}
+
+			$rs[$row['id']] = $r;
+
+		}
+
+		return array(
+			'ok'		=> 1,
+			'recipes'	=> $rs,
+		);
+	}
+
+
+	###########################################################################
+
 	#
 	# fetches a page from wowhead. this is just a stub to let
 	# us pass any needed args.
