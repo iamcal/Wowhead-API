@@ -33,3 +33,10 @@ Functions always return a hash with an <code>ok</code> key, in the Flamework sty
     $ret = wowhead_quest_cats(); # Quest categories & sub-categories
 
 More to come...
+
+
+## Tests
+
+You'll need a recent copy of Perl to run the tests:
+
+    prove --exec 'php' t/*.t
