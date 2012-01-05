@@ -1,5 +1,18 @@
 <?
 	#
+	# make sure the backtrack limit is set to soemthing sensible.
+	# PHP before 5.2.0 sets it to 10M
+	# PHP 5.2.0-5.37 sets it to 100k (too small!)
+	# PHP 5.3.7 onwards sets it to 1M
+	# https://bugs.php.net/bug.php?id=40846
+	#
+
+	$backtrack = ini_get('pcre.backtrack_limit');
+	$backtrack_set = 10000000; # 10 million
+	if ($backtrack < $backtrack_set) ini_set('pcre.backtrack_limit', $backtrack_set);
+
+
+	#
 	# a library for turning wowhead pages into useful data.
 	# don't abuse wowhead - we love them.
 	#
